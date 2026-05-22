@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackbeard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #0a0a0a; 
+            --card: #161616; 
+            --accent: #3b82f6; 
+            --text: #ffffff; 
+            --text-muted: #a3a3a3; 
+        }
+        
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        
+        /* Sistema de Navegação entre telas */
+        .screen { display: none; }
+        .active { display: block; }
+
+        header { margin-bottom: 30px; }
+        h1 { font-size: 28px; margin: 0; }
+        .logo { color: var(--accent); font-weight: 800; }
+
+        .card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.2s; }
+        .card:active { transform: scale(0.98); border-color: var(--accent); }
+        .card h3 { margin: 0 0 5px 0; font-size: 16px; }
+        .card p { color: var(--text-muted); font-size: 13px; margin: 0; }
+
+        /* Player Container Otimizado */
+        .video-wrapper { 
+            width: 100%; 
+            aspect-ratio: 16 / 9; /* Mantém proporção correta de vídeo */
+            border-radius: 20px; 
+            overflow: hidden; 
+            background: #000; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin: 20px 0;
+        }
+        <button id="btnTelaCheia" onclick="forcarTelaCheia()">
+    ⛶ Ampliar Vídeo
+</button>
+
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        .back-btn { background: #222; border: none; color: white; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div id="homeScreen" class="screen active">
+        <header><h1>Black<span class="logo">beard</span></h1></header>
+        <p style="color: var(--text-muted);">Seus Cursos</p>
+        <div id="listaCursos"></div>
+    </div>
+
+    <div id="aulasScreen" class="screen">
+        <button class="back-btn" onclick="irParaHome()">← Voltar</button>
+        <h2 id="nomeCurso" style="margin-top: 20px;"></h2>
+        <div id="listaAulas"></div>
+    </div>
+
+    <div id="playerScreen" class="screen">
+        <button class="back-btn" onclick="voltarParaAulas()">← Voltar</button>
+        <div class="video-wrapper">
+         <iframe 
+    id="player" 
+    src="" 
+    style="width: 100%; height: 100%; border: none;" 
+    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+    allowfullscreen="true" 
+    webkitallowfullscreen="true" 
+    mozallowfullscreen="true">
+</iframe>
+
+
+        </div>
+        <h3 id="tituloVideo"></h3>
+    </div>
+
+    <script src="data.js"></script>
+
+    <script>
+        // Carrega cursos do data.js
+        const listaCursos = document.getElementById('listaCursos');
+        for (let key in bancoDeDados) {
+            listaCursos.innerHTML += `
+                <div class="card" onclick="abrirCurso('${key}')">
+                    <h3>${bancoDeDados[key].titulo}</h3>
+                    <p>${bancoDeDados[key].aulas.length} Aulas</p>
+                </div>`;
+        }
+
+        function abrirCurso(cursoId) {
+            const curso = bancoDeDados[cursoId];
+            document.getElementById('nomeCurso').innerText = curso.titulo;
+            const listaAulas = document.getElementById('listaAulas');
+            listaAulas.innerHTML = '';
+            curso.aulas.forEach(aula => {
+                listaAulas.innerHTML += `
+                    <div class="card" onclick="abrirPlayer('${aula.id}', '${aula.titulo}')">
+                        <h3>${aula.titulo}</h3>
+                    </div>`;
+            });
+            document.getElementById('homeScreen').classList.remove('active');
+            document.getElementById('aulasScreen').classList.add('active');
+        }
+
+        function abrirPlayer(id, titulo) {
+            // SUBSTITUA "SUA_LIBRARY_ID" PELO ID DO SEU BUNNY STREAM
+            const libraryId = "667757"; 
+            document.getElementById('player').src = `https://iframe.mediadelivery.net/embed/${libraryId}/${id}`;
+            document.getElementById('tituloVideo').innerText = titulo;
+            document.getElementById('aulasScreen').classList.remove('active');
+            document.getElementById('playerScreen').classList.add('active');
+        }
+
+        function irParaHome() {
+            document.getElementById('aulasScreen').classList.remove('active');
+            document.getElementById('homeScreen').classList.add('active');
+        }
+
+        function voltarParaAulas() {
+            document.getElementById('player').src = ""; // Para o vídeo ao sair
+            document.getElementById('playerScreen').classList.remove('active');
+            document.getElementById('aulasScreen').classList.add('active');
+        }
+    </script>
+</body>
+</html>
