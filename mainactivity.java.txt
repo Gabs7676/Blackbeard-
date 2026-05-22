@@ -1,0 +1,8 @@
+// Dentro do seu arquivo MainActivity.java
+webView.setWebChromeClient(new WebChromeClient() {
+    @Override
+    public void onShowCustomView(View view, CustomViewCallback callback) {
+        // Isso é o que permite que o player de vídeo tome a tela toda
+        super.onShowCustomView(view, callback);
+    }
+});
